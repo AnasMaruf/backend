@@ -12,11 +12,11 @@ const register = async (request) => {
   const user = validate(registerUserValidation, request);
   const countUser = await prismaClient.user.count({
     where: {
-      username: user.username,
+      email: user.email,
     },
   });
   if (countUser === 1) {
-    throw new ResponseError(400, "username already exist");
+    throw new ResponseError(400, "Email already exist");
   }
   user.password = await bcrypt.hash(user.password, 10);
   return prismaClient.user.create({
@@ -33,9 +33,10 @@ const login = async (request) => {
   const loginRequest = validate(loginUserValidation, request);
   const user = await prismaClient.user.findUnique({
     where: {
-      email: loginRequest.email,
+      id: loginRequest.id,
     },
     select: {
+      id: true,
       email: true,
       password: true,
     },

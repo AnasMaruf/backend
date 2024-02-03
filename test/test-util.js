@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 const removeTestUser = async () => {
   await prismaClient.user.deleteMany({
     where: {
-      username: "test",
+      email: "test@gmail.com",
     },
   });
 };

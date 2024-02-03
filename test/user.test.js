@@ -13,6 +13,7 @@ describe("POST /api/users", () => {
       email: "test@gmail.com",
       password: "test123",
     });
+    logger.info(result.body);
     expect(result.status).toBe(200);
     expect(result.body.data.username).toBe("test");
     expect(result.body.data.email).toBe("test@gmail.com");
@@ -27,7 +28,7 @@ describe("POST /api/users", () => {
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
   });
-  it("Should reject if username is already", async () => {
+  it("Should reject if email is already", async () => {
     let result = await supertest(web).post("/api/users").send({
       username: "test",
       email: "test@gmail.com",
@@ -43,7 +44,6 @@ describe("POST /api/users", () => {
       email: "test@gmail.com",
       password: "test123",
     });
-    logger.error(result.body);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
   });
