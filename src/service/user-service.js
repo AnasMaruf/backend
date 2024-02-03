@@ -57,7 +57,7 @@ const login = async (request) => {
       token: token,
     },
     where: {
-      email: user.email,
+      id: user.id,
     },
     select: {
       token: true,
