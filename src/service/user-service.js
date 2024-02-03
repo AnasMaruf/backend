@@ -33,10 +33,11 @@ const login = async (request) => {
   const loginRequest = validate(loginUserValidation, request);
   const user = await prismaClient.user.findUnique({
     where: {
-      id: loginRequest.id,
+      // id: loginRequest.id,
+      username: loginRequest.username,
     },
     select: {
-      id: true,
+      // id: true,
       email: true,
       password: true,
     },
@@ -57,7 +58,7 @@ const login = async (request) => {
       token: token,
     },
     where: {
-      id: user.id,
+      email: user.email,
     },
     select: {
       token: true,

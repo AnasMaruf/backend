@@ -58,8 +58,9 @@ describe("POST /api/users/login", () => {
   });
   it("Should can login", async () => {
     const result = await supertest(web).post("/api/users/login").send({
-      id: 1,
-      email: "test@gmail.com",
+      // id: 1,
+      username: "test",
+      // email: "test@gmail.com",
       password: "test123",
     });
     logger.info(result.body);
