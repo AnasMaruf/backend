@@ -1,15 +1,11 @@
 import supertest from "supertest";
 import { web } from "../src/application/web";
-import { prismaClient } from "../src/application/database";
 import { logger } from "../src/application/logging";
+import { createTestUser, removeTestUser } from "./test-util";
 
 describe("POST /api/users", () => {
   afterEach(async () => {
-    await prismaClient.user.deleteMany({
-      where: {
-        username: "test",
-      },
-    });
+    await removeTestUser();
   });
   it("Should can register user", async () => {
     const result = await supertest(web).post("/api/users").send({
@@ -50,5 +46,24 @@ describe("POST /api/users", () => {
     logger.error(result.body);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe("POST /api/users/login", () => {
+  beforeEach(async () => {
+    await createTestUser();
+  });
+  afterEach(async () => {
+    await removeTestUser();
+  });
+  it("Should can login", async () => {
+    const result = await supertest(web).post("/api/users/login").send({
+      email: "test@gmail.com",
+      password: "test123",
+    });
+    logger.info(result.body);
+    expect(result.status).toBe(200);
+    expect(result.body.data.token).toBeDefined();
+    expect(result.body.data.token).not.toBe("test");
   });
 });
