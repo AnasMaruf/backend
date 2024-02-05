@@ -12,9 +12,8 @@ const removeTestUser = async () => {
 const createTestUser = async () => {
   await prismaClient.user.create({
     data: {
-      id: 1,
-      username: "test",
       email: "test@gmail.com",
+      username: "test",
       password: await bcrypt.hash("test123", 10),
       token: "test",
     },
