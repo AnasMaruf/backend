@@ -1,0 +1,10 @@
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+    "email":"anasmarufs@gmail.com",
+    "username":"anasmarufs",
+    "password":"password",
+    "confPassword":"passwordd"
+}

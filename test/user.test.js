@@ -7,32 +7,38 @@ describe("POST /api/users", () => {
   afterEach(async () => {
     await removeTestUser();
   });
+
   it("Should can register user", async () => {
     const result = await supertest(web).post("/api/users").send({
       username: "test",
       email: "test@gmail.com",
       password: "test123",
+      confPassword: "test123",
     });
-    logger.info(result.body);
+
     expect(result.status).toBe(200);
     expect(result.body.data.username).toBe("test");
     expect(result.body.data.email).toBe("test@gmail.com");
     expect(result.body.data.password).toBeUndefined();
   });
+
   it("Should reject if request is invalid", async () => {
     const result = await supertest(web).post("/api/users").send({
       username: "",
       email: "",
       password: "",
+      confPassword: "",
     });
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
   });
+
   it("Should reject if email is already", async () => {
     let result = await supertest(web).post("/api/users").send({
       username: "test",
       email: "test@gmail.com",
       password: "test123",
+      confPassword: "test123",
     });
     expect(result.status).toBe(200);
     expect(result.body.data.username).toBe("test");
@@ -43,6 +49,18 @@ describe("POST /api/users", () => {
       username: "test",
       email: "test@gmail.com",
       password: "test123",
+      confPassword: "test123",
+    });
+    expect(result.status).toBe(400);
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it("Should reject if password and confirm password do not match", async () => {
+    const result = await supertest(web).post("/api/users").send({
+      username: "test",
+      email: "test@gmail.com",
+      password: "test123",
+      confPassword: "password",
     });
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
@@ -60,7 +78,6 @@ describe("POST /api/users/login", () => {
 
   it("Should can login", async () => {
     const result = await supertest(web).post("/api/users/login").send({
-      username: "test",
       email: "test@gmail.com",
       password: "test123",
     });
@@ -74,7 +91,6 @@ describe("POST /api/users/login", () => {
       email: "testo@gmail.com",
       password: "test123",
     });
-    logger.info(result.body);
     expect(result.status).toBe(401);
     expect(result.body.errors).toBeDefined();
   });
@@ -84,7 +100,6 @@ describe("POST /api/users/login", () => {
       email: "test@gmail",
       password: "",
     });
-    logger.info(result.body);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
   });

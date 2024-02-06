@@ -18,9 +18,25 @@ const register = async (request) => {
   if (countUser === 1) {
     throw new ResponseError(400, "Email already exist");
   }
-  user.password = await bcrypt.hash(user.password, 10);
+
+  // Hash kata sandi sebelum menyimpan ke basis data
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+
+  // Validasi konfirmasi kata sandi
+  const isConfPasswordMatch = await bcrypt.compare(
+    user.confPassword,
+    hashedPassword
+  );
+
+  // Hapus confPassword dari objek data yang akan disimpan
+  delete user.confPassword;
+
   return prismaClient.user.create({
-    data: user,
+    data: {
+      username: user.username,
+      email: user.email,
+      password: hashedPassword,
+    },
     select: {
       username: true,
       email: true,
@@ -32,7 +48,7 @@ const login = async (request) => {
   const loginRequest = validate(loginUserValidation, request);
   const user = await prismaClient.user.findUnique({
     where: {
-        email: loginRequest.email,
+      email: loginRequest.email,
     },
     select: {
       email: true,
