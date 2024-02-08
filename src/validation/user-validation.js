@@ -7,10 +7,10 @@ const registerUserValidation = Joi.object({
   confPassword: Joi.string()
     .max(100)
     .valid(Joi.ref("password"))
-    .required()
     .messages({
       "any.only": "Password and confirm password do not match",
-    }),
+    })
+    .required(),
 });
 
 const loginUserValidation = Joi.object({
@@ -18,4 +18,6 @@ const loginUserValidation = Joi.object({
   password: Joi.string().max(100).required(),
 });
 
-export { registerUserValidation, loginUserValidation };
+const getUserValidation = Joi.number().positive().required();
+
+export { registerUserValidation, loginUserValidation, getUserValidation };

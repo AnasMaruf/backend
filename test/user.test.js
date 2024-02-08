@@ -100,7 +100,26 @@ describe("POST /api/users/login", () => {
       email: "test@gmail",
       password: "",
     });
+    logger.info(result.body);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe("DELETE /api/users/logout", () => {
+  beforeEach(async () => {
+    await createTestUser();
+  });
+  afterEach(async () => {
+    await removeTestUser();
+  });
+  it("Should logout user", async () => {
+    const result = await supertest(web)
+      .delete("/api/users/logout")
+      .set("Authorization", "test");
+
+    logger.error(result.body);
+    expect(result.status).toBe(200);
+    expect(result.body.data).toBe("OK");
   });
 });
