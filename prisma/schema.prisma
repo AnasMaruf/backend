@@ -16,6 +16,7 @@ model User{
   email String @db.VarChar(100) @unique
   password String @db.VarChar(100)
   token String? @db.VarChar(100)
+  products Product[]
 
   @@map("users")
 }
@@ -25,7 +26,9 @@ model Product{
   name String @db.VarChar(100)
   price Int @db.Int()
   description String @db.VarChar(500)
+  email_user String @db.VarChar(100) 
   created_at DateTime @default(now())
+  user User @relation(fields: [email_user],references: [email])
 
   @@map("products")
 }

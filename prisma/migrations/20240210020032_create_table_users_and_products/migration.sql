@@ -17,7 +17,11 @@ CREATE TABLE `products` (
     `name` VARCHAR(100) NOT NULL,
     `price` INTEGER NOT NULL,
     `description` VARCHAR(500) NOT NULL,
+    `email_user` VARCHAR(100) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE InnoDB;
+
+-- AddForeignKey
+ALTER TABLE `products` ADD CONSTRAINT `products_email_user_fkey` FOREIGN KEY (`email_user`) REFERENCES `users`(`email`) ON DELETE RESTRICT ON UPDATE CASCADE;

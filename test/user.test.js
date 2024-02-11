@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import { web } from "../src/application/web";
 import { logger } from "../src/application/logging";
-import { createTestUser, removeTestUser } from "./test-util";
+import { createTestUser, getTestUser, removeTestUser } from "./test-util";
 
 describe("POST /api/users", () => {
   afterEach(async () => {
@@ -33,7 +33,7 @@ describe("POST /api/users", () => {
     expect(result.body.errors).toBeDefined();
   });
 
-  it("Should reject if email is already", async () => {
+  it("Should reject if email is already exist", async () => {
     let result = await supertest(web).post("/api/users").send({
       username: "test",
       email: "test@gmail.com",
@@ -86,10 +86,19 @@ describe("POST /api/users/login", () => {
     expect(result.body.data.token).not.toBe("test");
   });
 
-  it("Should reject if email or password wrong", async () => {
+  it("Should reject if email is wrong", async () => {
     const result = await supertest(web).post("/api/users/login").send({
       email: "testo@gmail.com",
       password: "test123",
+    });
+    expect(result.status).toBe(401);
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it("Should reject if password is wrong", async () => {
+    const result = await supertest(web).post("/api/users/login").send({
+      email: "test@gmail.com",
+      password: "salah123",
     });
     expect(result.status).toBe(401);
     expect(result.body.errors).toBeDefined();
@@ -110,16 +119,29 @@ describe("DELETE /api/users/logout", () => {
   beforeEach(async () => {
     await createTestUser();
   });
+
   afterEach(async () => {
     await removeTestUser();
   });
+
   it("Should logout user", async () => {
     const result = await supertest(web)
       .delete("/api/users/logout")
       .set("Authorization", "test");
 
-    logger.error(result.body);
     expect(result.status).toBe(200);
     expect(result.body.data).toBe("OK");
+
+    const user = await getTestUser();
+    expect(user.token).toBeNull();
+  });
+
+  it("Should reject if token is not valid", async () => {
+    const result = await supertest(web)
+      .delete("/api/users/logout")
+      .set("Authorization", "salah");
+
+    expect(result.status).toBe(401);
+    expect(result.body.errors).toBeDefined();
   });
 });
