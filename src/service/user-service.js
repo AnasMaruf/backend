@@ -8,6 +8,7 @@ import {
 import { validate } from "../validation/validation.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
+import jwt from "jsonwebtoken";
 
 const register = async (request) => {
   const user = validate(registerUserValidation, request);
@@ -21,7 +22,8 @@ const register = async (request) => {
   }
 
   // Hash kata sandi sebelum menyimpan ke basis data
-  const hashedPassword = await bcrypt.hash(user.password, 10);
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(user.password, salt);
 
   // Validasi konfirmasi kata sandi
   const isConfPasswordMatch = await bcrypt.compare(
@@ -45,7 +47,7 @@ const register = async (request) => {
   });
 };
 
-const login = async (request) => {
+const login = async (request, refreshToken) => {
   const loginRequest = validate(loginUserValidation, request);
   const user = await prismaClient.user.findUnique({
     where: {
@@ -59,17 +61,20 @@ const login = async (request) => {
   if (!user) {
     throw new ResponseError(401, "Email or password wrong");
   }
+
   const isPasswordValid = await bcrypt.compare(
     loginRequest.password,
     user.password
   );
+
   if (!isPasswordValid) {
     throw new ResponseError(401, "Email or password wrong");
   }
-  const token = uuid().toString();
+
+  // const token = uuid().toString();
   return prismaClient.user.update({
     data: {
-      token: token,
+      token: refreshToken,
     },
     where: {
       email: user.email,

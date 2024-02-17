@@ -3,8 +3,35 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-    "email":"anasmarufs@gmail.com",
-    "username":"anasmarufs",
+    "email":"anasmaruf@gmail.com",
+    "username":"anasmaruf",
     "password":"password",
-    "confPassword":"passwordd"
+    "confPassword":"password"
 }
+
+###
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+    "email":"anasmaruf@gmail.com",
+    "password":"password"
+}
+
+###
+POST http://localhost:3000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuYXNtYXJ1ZkBnbWFpbC5jb20iLCJwYXNzd29yZCI6InBhc3N3b3JkIiwiaWF0IjoxNzA4MTQ1MzMzLCJleHAiOjE3MDgxNDUzOTN9._8BZX2oyzGyKtV7Wjl0PKRg0VpPOoS59dVBPgGSMOHg
+
+{
+    "name":"Product 11",
+    "price":4000,
+    "description":"test"
+}
+
+###
+GET http://localhost:3000/api/token
+
+###
+DELETE http://localhost:3000/api/users/logout
+
