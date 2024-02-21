@@ -1,5 +1,5 @@
 import express from "express";
-import { refreshToken } from "../controller/Refresh-Token-Controller.js";
+import { refreshToken } from "../controller/refresh-token-controller.js";
 import userController from "../controller/user-controller.js";
 
 const tokenRouter = express.Router();
