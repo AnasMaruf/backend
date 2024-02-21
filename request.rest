@@ -14,8 +14,8 @@ POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
-    "email":"anasmaruf@gmail.com",
-    "password":"password"
+    "email":"admin@gmail.com",
+    "password":"11111111"
 }
 
 ###
@@ -31,6 +31,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuYXNtY
 
 ###
 GET http://localhost:3000/api/token
+
+###
+GET http://localhost:3000/refresh
 
 ###
 DELETE http://localhost:3000/api/users/logout
