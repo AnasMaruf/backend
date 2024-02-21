@@ -3,6 +3,8 @@ import userController from "../controller/user-controller.js";
 import productController from "../controller/product-controller.js";
 import { verifyToken } from "../middleware/verify-token.js";
 
+// import { refreshToken } from "../controller/refresh-token-controller.js";
+
 const userRouter = new express.Router();
 
 // userRouter.use(authMiddleware);
@@ -10,6 +12,7 @@ userRouter.use(verifyToken);
 
 // User API
 userRouter.get("/api/users/current", userController.get);
+// userRouter.get('/refresh', refreshToken)
 
 //Product API
 userRouter.post("/api/products", productController.create);

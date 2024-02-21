@@ -4,7 +4,7 @@ CREATE TABLE `users` (
     `username` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     `password` VARCHAR(100) NOT NULL,
-    `token` VARCHAR(100) NULL,
+    `token` VARCHAR(255) NULL,
 
     UNIQUE INDEX `users_username_key`(`username`),
     UNIQUE INDEX `users_email_key`(`email`),

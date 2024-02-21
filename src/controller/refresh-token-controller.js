@@ -6,7 +6,7 @@ export const refreshToken = async (req, res, next) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       return res.status(401).json({
-        errors: "Unauthorized 10",
+        errors: "Unauthorized",
       });
     }
     const user = await prismaClient.user.findFirst({
@@ -15,8 +15,8 @@ export const refreshToken = async (req, res, next) => {
       },
     });
     if (!user) {
-      return res.status(404).json({
-        errors: "User is not found",
+      return res.status(403).json({
+        errors: "Forbidden",
       });
     }
     jwt.verify(
