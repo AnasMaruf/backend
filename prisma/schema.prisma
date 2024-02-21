@@ -15,7 +15,7 @@ model User{
   username String @db.VarChar(100) @unique
   email String @db.VarChar(100) @unique
   password String @db.VarChar(100)
-  token String? @db.VarChar(100)
+  token String? @db.Text()
   products Product[]
 
   @@map("users")

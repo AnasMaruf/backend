@@ -2,6 +2,7 @@ import supertest from "supertest";
 import { web } from "../src/application/web";
 import { logger } from "../src/application/logging";
 import { createTestUser, getTestUser, removeTestUser } from "./test-util";
+import jwt from "jsonwebtoken";
 
 describe("POST /api/users", () => {
   afterEach(async () => {
@@ -82,8 +83,8 @@ describe("POST /api/users/login", () => {
       password: "test123",
     });
     expect(result.status).toBe(200);
-    expect(result.body.data.token).toBeDefined();
-    expect(result.body.data.token).not.toBe("test");
+    expect(result.body.token).toBeDefined();
+    expect(result.body.token).not.toBe("test");
   });
 
   it("Should reject if email is wrong", async () => {
@@ -109,7 +110,6 @@ describe("POST /api/users/login", () => {
       email: "test@gmail",
       password: "",
     });
-    logger.info(result.body);
     expect(result.status).toBe(400);
     expect(result.body.errors).toBeDefined();
   });
@@ -125,9 +125,11 @@ describe("DELETE /api/users/logout", () => {
   });
 
   it("Should logout user", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const result = await supertest(web)
       .delete("/api/users/logout")
-      .set("Authorization", "test");
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toBe("OK");
@@ -136,12 +138,10 @@ describe("DELETE /api/users/logout", () => {
     expect(user.token).toBeNull();
   });
 
-  it("Should reject if token is not valid", async () => {
-    const result = await supertest(web)
-      .delete("/api/users/logout")
-      .set("Authorization", "salah");
+  it("Should reject if refreshToken is no content", async () => {
+    const result = await supertest(web).delete("/api/users/logout");
 
-    expect(result.status).toBe(401);
-    expect(result.body.errors).toBeDefined();
+    logger.error(result.body);
+    expect(result.status).toBe(204);
   });
 });

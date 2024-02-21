@@ -2,7 +2,6 @@ import express from "express";
 import userController from "../controller/user-controller.js";
 import productController from "../controller/product-controller.js";
 import { verifyToken } from "../middleware/verify-token.js";
-import { refreshToken } from "../controller/Refresh-Token-Controller.js";
 
 const userRouter = new express.Router();
 

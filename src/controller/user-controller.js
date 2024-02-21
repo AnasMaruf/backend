@@ -39,7 +39,7 @@ const login = async (req, res, next) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
     res.status(200).json({
-      data: accessToken,
+      token: accessToken,
     });
   } catch (e) {
     next(e);
@@ -61,12 +61,8 @@ const logout = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      res
-        .status(204)
-        .json({
-          errors: "No content",
-        })
-        .end();
+      res.sendStatus(204);
+      return;
     }
     const user = await prismaClient.user.findFirst({
       where: {
@@ -74,12 +70,8 @@ const logout = async (req, res, next) => {
       },
     });
     if (!user) {
-      res
-        .status(204)
-        .json({
-          errors: "No content",
-        })
-        .end();
+      res.sendStatus(204);
+      return;
     }
     await userService.logout(user.id);
     res.clearCookie("refreshToken");
@@ -87,7 +79,7 @@ const logout = async (req, res, next) => {
       data: "OK",
     });
   } catch (e) {
-    next(e);
+    return next(e);
   }
 };
 

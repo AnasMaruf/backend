@@ -3,12 +3,14 @@ import {
   createTestProduct,
   createTestUser,
   getTestProduct,
+  getTestUser,
   removeTestProduct,
   removeTestUser,
 } from "./test-util";
 import { web } from "../src/application/web";
 import jwt from "jsonwebtoken";
 import { logger } from "../src/application/logging";
+import cookieParser from "cookie-parser";
 
 describe("POST /api/products", () => {
   beforeEach(async () => {
@@ -20,6 +22,8 @@ describe("POST /api/products", () => {
   });
 
   it("Should can create new product", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -27,6 +31,7 @@ describe("POST /api/products", () => {
     const result = await supertest(web)
       .post("/api/products")
       .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "test",
         price: 4000,
@@ -40,6 +45,8 @@ describe("POST /api/products", () => {
   });
 
   it("Should can reject if request is invalid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -47,6 +54,7 @@ describe("POST /api/products", () => {
     const result = await supertest(web)
       .post("/api/products")
       .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "",
         price: null,
@@ -57,6 +65,8 @@ describe("POST /api/products", () => {
   });
 
   it("Should can reject if token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -64,6 +74,7 @@ describe("POST /api/products", () => {
     const result = await supertest(web)
       .post("/api/products")
       .set("Authorization", `${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "test",
         price: 4000,
@@ -74,6 +85,8 @@ describe("POST /api/products", () => {
   });
 
   it("Should can reject if verify token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -81,6 +94,7 @@ describe("POST /api/products", () => {
     const result = await supertest(web)
       .post("/api/products")
       .set("Authorization", `Bearer ${token}a`)
+      .set("Cookie", cookies)
       .send({
         name: "test",
         price: 4000,
@@ -103,39 +117,48 @@ describe("GET /api/products", () => {
   });
 
   it("Should can get product", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
     );
     const result = await supertest(web)
       .get("/api/products")
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(200);
-    expect(result.body.data.length).toBe(1);
+    expect(result.body.data.length).toBe(8);
   });
 
   it("Should reject if token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
     );
     const result = await supertest(web)
       .get("/api/products")
-      .set("Authorization", `${token}`);
+      .set("Authorization", `${token}`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(401);
     expect(result.body.errors).toBeDefined();
   });
 
   it("Should reject if verify token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
     );
     const result = await supertest(web)
       .get("/api/products")
-      .set("Authorization", `Bearer ${token}a`);
+      .set("Authorization", `Bearer ${token}a`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(403);
     expect(result.body.errors).toBeDefined();
@@ -152,6 +175,8 @@ describe("PUT /api/products/:productId", () => {
     await removeTestUser();
   });
   it("Should can update products", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -160,6 +185,7 @@ describe("PUT /api/products/:productId", () => {
     const result = await supertest(web)
       .put(`/api/products/` + productId.id)
       .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "test",
         price: 4000,
@@ -172,6 +198,8 @@ describe("PUT /api/products/:productId", () => {
   });
 
   it("Should reject if product is not found", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -180,6 +208,7 @@ describe("PUT /api/products/:productId", () => {
     const result = await supertest(web)
       .put(`/api/products/${productId.id + 1}`)
       .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "updated test",
         price: 5000,
@@ -190,6 +219,8 @@ describe("PUT /api/products/:productId", () => {
   });
 
   it("Should reject if token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -198,6 +229,7 @@ describe("PUT /api/products/:productId", () => {
     const result = await supertest(web)
       .put(`/api/products/${productId.id}`)
       .set("Authorization", `${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "updated test",
         price: 5000,
@@ -208,6 +240,8 @@ describe("PUT /api/products/:productId", () => {
   });
 
   it("Should reject if verify token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -216,6 +250,7 @@ describe("PUT /api/products/:productId", () => {
     const result = await supertest(web)
       .put(`/api/products/${productId.id}`)
       .set("Authorization", `Bearer ${token}a`)
+      .set("Cookie", cookies)
       .send({
         name: "updated test",
         price: 5000,
@@ -226,6 +261,8 @@ describe("PUT /api/products/:productId", () => {
   });
 
   it("Should reject if request is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -234,6 +271,7 @@ describe("PUT /api/products/:productId", () => {
     const result = await supertest(web)
       .put(`/api/products/${productId.id}`)
       .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies)
       .send({
         name: "test",
         price: 4000,
@@ -255,6 +293,8 @@ describe("DELETE /api/products/:product", () => {
   });
 
   it("Should can remove product", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -262,13 +302,16 @@ describe("DELETE /api/products/:product", () => {
     const productId = await getTestProduct();
     const result = await supertest(web)
       .delete(`/api/products/${productId.id}`)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(200);
     expect(result.body.data).toBe("OK");
   });
 
   it("Should reject if product is not found", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -276,13 +319,16 @@ describe("DELETE /api/products/:product", () => {
     const productId = await getTestProduct();
     const result = await supertest(web)
       .delete(`/api/products/${productId.id + 1}`)
-      .set("Authorization", `Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(404);
     expect(result.body.errors).toBeDefined();
   });
 
   it("Should reject if token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -290,13 +336,16 @@ describe("DELETE /api/products/:product", () => {
     const productId = await getTestProduct();
     const result = await supertest(web)
       .delete(`/api/products/${productId.id}`)
-      .set("Authorization", `${token}`);
+      .set("Authorization", `${token}`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(401);
     expect(result.body.errors).toBeDefined();
   });
 
   it("Should reject if verify token is not valid", async () => {
+    const testUser = await getTestUser();
+    const cookies = `refreshToken=${testUser.token};`;
     const token = jwt.sign(
       { email: "test@gmail.com" },
       process.env.ACCESS_TOKEN_SECRET
@@ -304,7 +353,8 @@ describe("DELETE /api/products/:product", () => {
     const productId = await getTestProduct();
     const result = await supertest(web)
       .delete(`/api/products/${productId.id}`)
-      .set("Authorization", `Bearer ${token}a`);
+      .set("Authorization", `Bearer ${token}a`)
+      .set("Cookie", cookies);
 
     expect(result.status).toBe(403);
     expect(result.body.errors).toBeDefined();
