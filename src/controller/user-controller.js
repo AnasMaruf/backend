@@ -23,14 +23,14 @@ const login = async (req, res, next) => {
       { id, email, password },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "60s",
+        expiresIn: "15s",
       }
     );
     const refreshToken = jwt.sign(
       { id, email, password },
       process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: "60s",
+        expiresIn: "1d",
       }
     );
     await userService.login(request, refreshToken);
@@ -38,9 +38,10 @@ const login = async (req, res, next) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({
-      token: accessToken,
-    });
+    // res.status(200).json({
+    //   token: accessToken,
+    // });
+    res.json({ accessToken });
   } catch (e) {
     next(e);
   }

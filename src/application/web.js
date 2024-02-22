@@ -12,7 +12,7 @@ export const web = express();
 web.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 web.use(cookieParser());
 web.use(express.json());
-web.use(publicRouter);
 web.use(tokenRouter);
+web.use(publicRouter);
 web.use(userRouter);
 web.use(errorMiddleware);

@@ -24,6 +24,7 @@ export const refreshToken = async (req, res, next) => {
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) {
+          // console.error("Error verifying token:", err);
           return res.status(403).json({
             errors: "Forbidden",
           });
