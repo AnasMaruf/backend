@@ -15,7 +15,7 @@ export const refreshToken = async (req, res, next) => {
       },
     });
     if (!user) {
-      return res.status(403).json({
+      return res.status(404).json({
         errors: "Forbidden",
       });
     }
@@ -35,10 +35,10 @@ export const refreshToken = async (req, res, next) => {
           { id, email, password },
           process.env.ACCESS_TOKEN_SECRET,
           {
-            expiresIn: "60s",
+            expiresIn: "15s",
           }
         );
-        return res.json({ accessToken });
+        res.json({ accessToken });
       }
     );
   } catch (e) {
